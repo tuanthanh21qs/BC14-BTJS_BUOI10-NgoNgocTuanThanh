@@ -24,3 +24,7 @@
 #btnTimNV {
   cursor: pointer;
 }
+
+.sp-thongbao{
+	display: block !important;
+}

@@ -75,6 +75,10 @@ function themNhanVien() {
     gioLam
   );
 
+  var isValid = xacThuc(nhanVien);
+  if (!isValid) {
+    return;
+  }
   dsnv.push(nhanVien);
 
   hienThi(dsnv);
@@ -131,10 +135,10 @@ function xoaNhanVien(taiKhoan) {
   hienThi(dsnv);
 }
 
-function chonNhanVien(taiKhoan){
+function chonNhanVien(taiKhoan) {
   var nhanVien = dsnv.find(function (maTK) {
     return maTK.taiKhoan === taiKhoan;
-  })
+  });
 
   document.getElementById("tknv").value = nhanVien.taiKhoan;
   document.getElementById("name").value = nhanVien.hoTen;
@@ -149,8 +153,7 @@ function chonNhanVien(taiKhoan){
   document.getElementById("btnThemNV").style.display = "none";
 }
 
-
-function capNhat (){
+function capNhat() {
   var taiKhoan = document.getElementById("tknv").value;
   var hoTen = document.getElementById("name").value;
   var email = document.getElementById("email").value;
@@ -171,18 +174,24 @@ function capNhat (){
     gioLam
   );
 
-  dsnv = dsnv.map(function (nv){
+  dsnv = dsnv.map(function (nv) {
     if (nv.taiKhoan === taiKhoan) {
-        return nhanVien;
-    } 
+      return nhanVien;
+    }
 
-    return nv
-  })
+    return nv;
+  });
+
+  var isValid = xacThuc(nhanVien);
+  if (!isValid) {
+    return;
+  }
+
   document.getElementById("btnThemNV").style.display = "none";
-  hienThi(dsnv);  
+  hienThi(dsnv);
 }
 
-function resetForm (){
+function resetForm() {
   document.getElementById("tknv").value = "";
   document.getElementById("name").value = "";
   document.getElementById("email").value = "";
@@ -191,18 +200,42 @@ function resetForm (){
   document.getElementById("luongCB").value = "";
   document.getElementById("chucvu").value = "Chọn chức vụ";
   document.getElementById("gioLam").value = "";
-
 }
 
-function timKiem(){
-  var search = document.getElementById('searchName').value;
+function timKiem() {
+  var search = document.getElementById("searchName").value;
 
-  var newDs =  dsnv.filter(function(nv){
-    return (nv.xepLoai().toLowerCase().trim().indexOf(search.toLowerCase().trim())) !== -1;
-  }) 
+  var newDs = dsnv.filter(function (nv) {
+    return (
+      nv.xepLoai().toLowerCase().trim().indexOf(search.toLowerCase().trim()) !==
+      -1
+    );
+  });
 
   console.log(newDs);
   hienThi(newDs);
 
-  document.getElementById('searchName').value = "";
+  document.getElementById("searchName").value = "";
+}
+
+function xacThuc(value) {
+  var validator = new Validator();
+  var isValid = validator.isRequired("tbTKNV", value.taiKhoan) && validator.taiKhoan("tbTKNV", value.taiKhoan);
+  isValid &= validator.isRequired("tbTen", value.hoTen) && validator.hoTen("tbTen", value.hoTen); 
+  isValid &= validator.isRequired("tbEmail", value.email) && validator.hoTen("tbEmail", value.email);
+  isValid &= validator.isRequired("tbMatKhau", value.matKhau) && validator.matKhau("tbMatKhau", value.matKhau);
+  isValid &= validator.isRequired("tbNgay", value.ngayLam) && validator.ngayLam("tbNgay", value.ngayLam);
+  isValid &= validator.isRequired("tbLuongCB", value.luongCoBan);
+  isValid &= validator.isRequired("tbChucVu", value.chucVu);
+  isValid &= validator.isRequired("tbGiolam", value.gioLam);
+
+  if (!isValid) {
+    for (var key in validator.errors) {
+      if (validator.errors[key]) {
+        document.getElementById(key).innerHTML = validator.errors[key];
+      }
+    }
+    return false;
+  }
+  return true;
 }
